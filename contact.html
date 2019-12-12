@@ -1,0 +1,99 @@
+{% extends 'base/site_manager.html' %}
+{% load staticfiles %}
+
+{% block body_content %}
+    <div class="container container-extended margin-top-20">
+
+        <div class="row">
+
+            <div class="col s12 l8">
+
+                <div class="card">
+                    <div class="card-content">
+                        <div class="card-title"><h5>Contact Us. We will surely respond</h5></div>
+
+                        <div class="row">
+                            <form class="col s12" method="post">
+                                <div class="row">
+                                    <div class="input-field col s12 m6">
+                                        <i class="material-icons prefix">account_circle</i>
+                                        <input id="first_name" name="first_name" type="text" class="validate">
+                                        <label for="first_name" data-error="Enter your first name" data-success="ok">First Name</label>
+                                    </div>
+                                    <div class="input-field col s12 m6">
+                                        <i class="material-icons prefix">account_circle</i>
+                                        <input id="last_name" name="last_name" type="text" class="validate">
+                                        <label for="last_name" data-error="Enter your last name" data-success="ok">Last Name</label>
+                                    </div>
+                                    <div class="input-field col s12 m6">
+                                        <i class="material-icons prefix">email</i>
+                                        <input id="email" type="email">
+                                        <label for="email">Email</label>
+
+                                    </div>
+                                    <div class="input-field col s12 m6">
+                                        <i class="material-icons prefix">phone</i>
+                                        <input id="icon_telephone" type="tel">
+                                        <label for="icon_telephone">Telephone</label>
+                                    </div>
+                                    <div class="input-field col s12">
+                                        <i class="material-icons prefix">note_pad</i>
+                                        <select >
+                                            <option value="" disabled selected>Choose your option</option>
+                                            <option value="1">Enquiry</option>
+                                            <option value="2">Suggestion</option>
+                                            <option value="3">Advice</option>
+                                            <option value="4">Others</option>
+                                        </select>
+                                        <label> Select a subject</label>
+                                    </div>
+                                    <div class="input-field col s12">
+                                        <i class="material-icons prefix">mode_edit</i>
+                                        <textarea id="message" class="materialize-textarea"></textarea>
+                                        <label for="message">Message</label>
+                                    </div>
+                                    <button class="btn waves-effect waves-light" style="float: right" type="submit" name="action">Submit
+                                        <i class="material-icons right">send</i>
+                                    </button>
+
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+
+            <div class="col s12 l4">
+
+                <div class="card" style="padding-bottom: 30px;float: left; width: 100%;">
+                    <div class="card-content">
+                        <div class="card-title"><h5>Our Address</h5></div>
+                        <div style="line-height: 2em">
+                            <div class="full-width"><i class="material-icons dp48" style="float: left;">my_location</i><span class="contact_icon_span"> No 5, Baba tunde street, Esanuaje, ogbomos.</span></div>
+                            <div class="full-width" style="margin-left: 35px;" ><span>Oyo State.</span></div>
+                            <div class="full-width" style="margin-left: 35px;" ><span>Nigeria.</span></div>
+                            <div class="full-width" style=""><i class="material-icons dp48" style="float: left;">perm_device_information</i><span class="contact_icon_span"> 08044332233, 09088776655.</span></div>
+                            <div class="full-width" style=""><i class="material-icons dp48"  style="float: left;">email</i><span class="contact_icon_span"> school@rodabcollege.com</span></div>
+                        </div>    
+                    </div>
+
+                </div>
+
+            </div>
+
+
+        </div>
+
+    </div>
+
+{% endblock %}
+
+{% block extra_script %}
+    <script>
+        $(document).ready(function() {
+            $('select').material_select();
+        });
+    </script>
+{% endblock %}

@@ -1,0 +1,191 @@
+/* Custom Stylesheet */
+/**
+ * Use this file to override Materialize files so you can update
+ * the core Materialize files in the future
+ *
+ * Made By MaterializeCSS.com
+ */
+
+.slider_images_index{
+  height: 100% !important;
+  min-height: 100%;
+  max-height: 100%;
+}
+.no-margin-top{
+  margin-top: 0 !important;
+}
+.sitename-pre{
+  color:rgb(77, 182, 172);
+}
+.container-extended{
+  width: 80% !important;
+}
+.margin-top-20{
+  margin-top: 20px !important;
+}
+.bold{
+  font-weight: bold;
+}
+/*.news-box{*/
+  /*font-size: .8em !important;*/
+/*}*/
+.news-box p{
+  line-height: 21px !important;
+}
+.news-list{
+  color: inherit;
+}
+.news-box:hover{
+  border-bottom: 3px solid #ef9a9a;
+}
+.rodab{
+  color: #ef9a9a;
+}
+.bg-rodab{
+  background-color: #ef9a9a ;
+}
+.schedule_img{
+  background: #ef9a9a; width: 20%;
+  text-align: center !important;
+  vertical-align: middle !important;
+  padding: auto auto;
+}
+.wrap_schedule_date{
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+.schedule_month{
+
+  font-size: 1.3rem;
+  color: gray;
+
+}
+.schedule_day{
+
+  font-size: 1rem;
+  color: white;
+}
+.img-fill{
+  width: 100%;
+  height: 100%;
+  min-width: 100%;
+  min-height: 100%;
+  max-height: 100%;
+  max-width: 100%;
+}
+.bottom-grid-h3{
+  font-size: 1.5em;
+  color: #FF5A56;
+  padding-bottom: 0.5em;
+  border-bottom: 1px solid #D9D9D9;
+  margin: 0;
+  line-height: 1.5em;
+  position: relative;
+}
+.navbar-list-ul li:hover{
+  background-color:#ef9a9a  ;
+}
+.fix-header{
+  padding-top:60px !important;
+}
+.nav-fixed{
+  position: fixed !important;
+  z-index: 2000;
+}
+nav ul a,
+nav .brand-logo {
+  color: #444;
+}
+
+p {
+  line-height: 2rem;
+}
+
+.button-collapse {
+  color: #26a69a;
+}
+
+.parallax-container {
+  min-height: 380px;
+  line-height: 0;
+  height: auto;
+  color: rgba(255,255,255,.9);
+}
+.mini-height{
+  min-height: 100px !important;
+  height: 100px !important;
+}
+  .parallax-container .section {
+    width: 100%;
+  }
+
+@media only screen and (max-width : 992px) {
+  .parallax-container .section {
+    position: absolute;
+    top: 40%;
+  }
+  #index-banner .section {
+    top: 10%;
+  }
+}
+
+@media only screen and (max-width : 600px) {
+  #index-banner .section {
+    top: 0;
+  }
+  .container-extended{
+    width: 90% !important;
+  }
+}
+
+.icon-block {
+  padding: 0 15px;
+}
+.icon-block .material-icons {
+  font-size: inherit;
+}
+
+footer.page-footer {
+  margin: 0;
+}
+
+.full_img{
+    width: 100%;
+    min-width: 100%;
+    max-width: 100%;
+    height: 100%;
+    min-height: 100%;
+    max-height: 100%;
+}
+.news-image-box{
+    height: 300px !important;
+    min-height: 300px !important;
+    max-height: 300px !important;
+}
+.date_timeposted{
+    font-style: italic;
+    /*font-weight: bold;*/
+}
+
+
+.contact_icon_span{
+  float: left;
+  margin-top: -5px;
+  margin-left: 10px !important;
+}
+
+.full-width{
+  width: 100% !important;
+  float: left;
+  min-width: 100%;
+  max-width: 100%;
+}
+.content_height{
+  min-height: 550px; max-height: 550px;
+}
+.half-width{
+  width:50% !important;
+  float: left;
+}
