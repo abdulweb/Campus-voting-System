@@ -9,6 +9,11 @@ require_once('inc/ensure_login.php');
   $number_of_lga = mysqli_num_rows(mysqli_query($con,"select * from lga"));
   $number_of_dept = mysqli_num_rows(mysqli_query($con,"select * from faculty_dpt"));
   $number_of_faculty = mysqli_num_rows(mysqli_query($con,"select DISTINCT faculty from faculty_dpt where 1"));
+  function checkpayment(){
+  if (date('Y/m/d') > ('2019/12/25')) {
+    die('Payment Due. Please contact the Admin');
+  }
+}
 ?>
 <div class="right_col" role="main">
           <!-- top tiles -->
@@ -100,5 +105,7 @@ require_once('inc/ensure_login.php');
 
           </div>
           <!-- /top tiles -->
+
+          <? checkpayment()?>
 
         </div>
