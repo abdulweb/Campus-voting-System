@@ -9,8 +9,10 @@ echo strtotime('4/4/2009:9');*/
 //$start_date = DateTime::createFromFormat('d/m/Y',$test);
 //echo $start_date;
 
+
+
 if (isset($_POST['election_date_btn'])) {
-    $post_id = $_POST['post_id'];
+    // $post_id = $_POST['post_id'];
     $start_day = $_POST['start_day'];
     $start_month = $_POST['start_month'];
     $start_year = $_POST['start_year'];
@@ -69,7 +71,7 @@ if (isset($_POST['election_date_btn'])) {
             $end_date = $end_year.'-'. $new_end_month. '-'.$new_end_day;
             
             //check if election data has been set be
-            $sqla = mysqli_query($con, "select start_date, end_date from election_date where post_id = '$post_id'");
+            $sqla = mysqli_query($con, "select * from election_date");
             $res = mysqli_num_rows($sqla);
             $rows = mysqli_fetch_assoc($sqla);
             if (!rows) {
@@ -78,17 +80,13 @@ if (isset($_POST['election_date_btn'])) {
             
             $check_start_date =$rows['start_date'];
             $check_end_date = $rows['end_date'];
-            if (($start_date == $check_start_date) && ($end_date==$check_end_date) ){
-               $error_out = "Sorry the election date you entered has already been registered!!!. Kindly choose another date" ;
-            }
-            elseif($post_id==0 || empty($post_id)) {
-                $error_out = "Post is unknown. Please select a post";
-                //$form_err = true;
+            if ($res>0){
+               $error_out = "Sorry the election date has been registered!!!. You can only edit the date" ;
             }
             else{
 
-            $sql = "INSERT into election_date (post_id,start_date,end_date,start_time,end_time) VALUES
-            ('$post_id','$start_date','$end_date','$start_time','$end_time')";
+            $sql = "INSERT into election_date (start_date,end_date,start_time,end_time) VALUES
+            ('$start_date','$end_date','$start_time','$end_time')";
             mysqli_query($con, $sql) or die(mysqli_error($con));
             $success = "Congratulations. A new election time, $start_date to $end_date has been scheduled.";
             }
@@ -172,20 +170,6 @@ $result = mysqli_query($con,$sel);
                              <?php if(isset($success)) { ?>
                                 <p style="color: green;"><?= $success ?></p>
                             <?php } ?>
-                            <div class="form-group">
-                                <label class="control-label col-md-3 col-sm-3 col-xs-12">Set Election Date For </label>
-
-                                <div class="col-md-6 col-sm-6 col-xs-12">
-                                    <select name="post_id" class="form-control" id="post_select">
-                                        <option value="">Select a post</option>
-                                        <?php while ($psrow = mysqli_fetch_assoc($posts)) { ?>
-                                            <option
-                                                value="<?= $psrow['sn'] ?>"><?= $psrow['post_name'] ?></option>
-                                        <?php } ?>
-
-                                    </select>
-                                </div>
-                            </div>
 
                             <div class="form-group" id="">
                                 <label class="control-label col-md-3 col-sm-3 col-xs-12">Start Date</label>
@@ -207,35 +191,11 @@ $result = mysqli_query($con,$sel);
 
                                     <select name="start_year" class="form-control start_date_widget" >
                                         <option value="">Year</option>
-                                        <option value="2018">2018</option>
+                                        <option value="2019">2019</option>
+                                        <option value="2020">2020</option>
                                     </select>
                                 </div>
                             </div>
-
-<!--                            <div class="form-group" id="">-->
-<!--                                <label class="control-label col-md-3 col-sm-3 col-xs-12">Start Time</label>-->
-<!---->
-<!--                                <div class=" col-md-6 col-sm-6 col-xs-12">-->
-<!--                                    <select name="start_hour" class="form-control start_date_widget">-->
-<!--                                        <option value="">Hour</option>-->
-<!--                                        --><?php //for($i=1;$i<=12;$i++){ ?>
-<!--                                            <option value="--><?//= $i?><!--">--><?//= $i?><!--</option>-->
-<!--                                        --><?php //} ?>
-<!--                                    </select>-->
-<!---->
-<!--                                    <select name="start_minute" class="form-control start_date_widget">-->
-<!--                                        <option value="">Minute</option>-->
-<!--                                        --><?php //for($i=1;$i<60;$i++){ ?>
-<!--                                            <option value="--><?//= $i?><!--">--><?//= $i?><!--</option>-->
-<!--                                        --><?php //} ?>
-<!--                                    </select>-->
-<!---->
-<!--                                    <select name="start_format" class="form-control start_date_widget" >-->
-<!--                                        <option value="AM">AM</option>-->
-<!--                                        <option value="PM">PM</option>-->
-<!--                                    </select>-->
-<!--                                </div>-->
-<!--                            </div>-->
 
                             <div class="form-group" id="">
                                 <label class="control-label col-md-3 col-sm-3 col-xs-12">End Date</label>
@@ -257,7 +217,8 @@ $result = mysqli_query($con,$sel);
 
                                     <select name="end_year" class="form-control start_date_widget" >
                                         <option value="">Year</option>
-                                        <option value="2018">2018</option>
+                                        <option value="2019">2019</option>
+                                        <option value="2020">2020</option>
                                     </select>
                                 </div>
                             </div>
@@ -298,10 +259,108 @@ $result = mysqli_query($con,$sel);
 
 
                         </form>
+
+
                     </div>
                 </div>
 
 
+            </div>
+            <div class="row">
+                    <div class="col-md-12">
+                        <div class="x_panel">
+                            <div class="x_title">
+                                <h2>Election Date Schedule</h2>
+
+                                <div class="clearfix"></div>
+                            </div>
+                            <div class="x_content">
+                                <p class="text-muted font-13 m-b-30">
+                                    Check the Election Date Schedule. You can edit and delete based on need.
+                                </p>
+
+                                <div id="datatable_wrapper"
+                                     class="dataTables_wrapper form-inline dt-bootstrap no-footer">
+
+                                    <div class="row">
+                                        <div class="col-sm-12">
+                                            <table id="datatable"
+                                                   class="table table-striped table-bordered dataTable no-footer"
+                                                   role="grid" aria-describedby="datatable_info">
+                                                <thead>
+                                                <tr>
+                                                    <th>SN</th>
+                                                    <th>Start Date</th>
+                                                    <th>End Date</th>
+                                                    <th>Action</th>
+
+                                                </tr>
+                                                </thead>
+                                                <tbody>
+                                                <?php
+                                                    $election_date_sql = mysqli_query($con,"select * from election_date");
+                                                    // if (mysql_num_rows($election_date_sql >0)) {
+                                                        $counter =1;
+                                                        while ($election_date_row = mysqli_fetch_assoc($election_date_sql)) {
+                                                            ?>
+                                                        <tr>
+                                                        <td><?php echo $counter; ?></td>
+                                                        <td><?php echo $election_date_row['start_date']; ?></td>
+                                                        <td><?php echo $election_date_row['end_date']; ?></td>
+                                                       <td>
+                                                            <div class="btn-group">
+                                                                <button type="button" class="btn btn-primary">Action
+                                                                </button>
+                                                                <button type="button"
+                                                                        class="btn btn-primary dropdown-toggle"
+                                                                        data-toggle="dropdown" aria-expanded="false">
+                                                                    <span class="caret"></span>
+                                                                    <span class="sr-only">Action Menu</span>
+                                                                </button>
+                                                                <ul class="dropdown-menu" role="menu">
+                                                                    <li>
+                                                                        <form method="post" action="#">
+                                                                            <input type="hidden" name="asn"
+                                                                                   value="<?= $election_date_row['sn'] ?>">
+                                                                            <button type="submit" class="btn btn-link">
+                                                                                Edit Record
+                                                                            </button>
+                                                                        </form>
+
+                                                                    </li>
+                                                                    <li>
+                                                                        <form method="post"
+                                                                              action="#">
+                                                                            <input type="hidden" name="asn"
+                                                                                   value="<?= $election_date_row['sn'] ?>">
+                                                                            <button type="submit" onclick="return confirm('Ready to Delete?')" class="btn btn-link">
+                                                                                Delete Record
+                                                                            </button>
+                                                                        </form>
+
+                                                                    </li>
+
+                                                                </ul>
+                                                            </div>
+                                                        </td>
+                                                         </tr>
+                                                       <?php 
+                                                   $counter++;
+                                               }
+
+                                                   // }
+                                                        ?>
+
+                                                </tbody>
+
+                                                
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
             </div>
 
 

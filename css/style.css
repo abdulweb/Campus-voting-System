@@ -44,6 +44,9 @@
 .bg-rodab{
   background-color: #ef9a9a ;
 }
+.heading_name{
+  color: seagreen;
+}
 .schedule_img{
   background: #ef9a9a; width: 20%;
   text-align: center !important;

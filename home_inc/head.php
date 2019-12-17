@@ -1,6 +1,6 @@
 <nav class="white nav-fixed" role="navigation">
     <div class="nav-wrapper container">
-        <a id="logo-container" href="/evoting/" class="brand-logo"><span class="rodab">E-VOTING</span>
+        <a id="logo-container" href="/evoting/" class="brand-logo"><span class="rodab " style="color:seagreen; font-style: italic;">E-VOTING</span>
             SYSTEM</a>
         <?php if(isset($_SESSION['isvoter'])) { ?>
         <ul class="right hide-on-med-and-down navbar-list-ul">

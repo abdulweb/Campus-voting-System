@@ -7,7 +7,8 @@ require_once('inc/ensure_login.php');
   $number_of_posts = mysqli_num_rows(mysqli_query($con,"select * from post"));
   $number_of_states = mysqli_num_rows(mysqli_query($con,"select DISTINCT name from lga where 1"));
   $number_of_lga = mysqli_num_rows(mysqli_query($con,"select * from lga"));
-  $number_of_ward = mysqli_num_rows(mysqli_query($con,"select * from ward"));
+  $number_of_dept = mysqli_num_rows(mysqli_query($con,"select * from faculty_dpt"));
+  $number_of_faculty = mysqli_num_rows(mysqli_query($con,"select DISTINCT faculty from faculty_dpt where 1"));
 ?>
 <div class="right_col" role="main">
           <!-- top tiles -->
@@ -79,9 +80,20 @@ require_once('inc/ensure_login.php');
               <div class="tile-stats">
                 <div class="icon"><i class="fa fa-sort-amount-desc"></i>
                 </div>
-                <div class="count"><?=$number_of_ward?></div>
+                <div class="count"><?=$number_of_faculty?></div>
 
-                <h3>Total Ward</h3>
+                <h3>Total Faculty</h3>
+
+              </div>
+            </div>
+
+            <div class="animated flipInY col-lg-3 col-md-3 col-sm-6 col-xs-12">
+              <div class="tile-stats">
+                <div class="icon"><i class="fa fa-sort-amount-desc"></i>
+                </div>
+                <div class="count"><?=$number_of_dept?></div>
+
+                <h3>Total Department</h3>
 
               </div>
             </div>

@@ -2,45 +2,50 @@
 require_once('inc/ensure_login.php');
     require('inc/connect.inc.php');
 
-function generate_voters_id(){
+function generate_voters_id()
+{
     global $con;
     $prefix= "V";
     $gen = '';
     for($i=1; $i<=18; $i++){
         $gen .= rand(1,9);
     }
-    $proposed_v_n = $prefix.$gen;
-    //setting default password for VOTERS
-    $voters_def_pass = "12345678";
-    //check if voter id exist in db
-    $rd = mysqli_query($con,"Select voter_id from registeration where voter_id='$proposed_v_n'");
-    if(mysqli_num_rows($rd) > 0){
-        generate_voters_id();
-    }else{
-        return $proposed_v_n;
-    }
+    return $prefix.$gen;
 }
+function get_lga($id)
+{
+    global $con;
+    $get_lga = mysqli_fetch_assoc(mysqli_query($con,"Select * from lga where sn='$id'"));
+    return $get_lga['lga'];
+}
+function get_dept($id)
+{
+    global $con;
+    $get_lga = mysqli_fetch_assoc(mysqli_query($con,"Select * from faculty_dpt where sn='$id'"));
+    return $get_lga['dept'];
+}
+
+    $session_Username = $_SESSION['isvoter'];
+    //check if voter id exist in db
+    $rd = mysqli_query($con,"Select * from registeration where email_id='$session_Username'");
+
 if(isset($_POST['voter_submit_btn'])){
     $fname= $_POST['fname'];
     $mname= $_POST['mname'];
     $lname= $_POST['lname'];
-    $address= $_POST['address'];
-    $occupation= $_POST['occupation'];
+    $level= $_POST['level'];
+    $faculty= $_POST['faculty'];
     $gender= $_POST['gender'];
-    $dob= $_POST['dob'];
-    $age= $_POST['age'];
-    $status= $_POST['status'];
+    $dept= $_POST['dept'];
+    $Course_of_study= $_POST['course_of_study'];
     $email_id= mysqli_real_escape_string($con,$_POST['email_id']);
     $phn_no= $_POST['phn_no'];
-    $nationality= $_POST['nationality'];
     $state_origin= $_POST['state_origin'];
     $lga= $_POST['lga'];
-    $ward= $_POST['ward'];
-    $religion= $_POST['religion'];
     $form_err= false;
-    if($fname == '' || $mname == '' || $lname == '' || $address == '' || $gender == '' || $dob == '' || $age == '' || $status == '' ||
-        $email_id == '' || $email_id == '' || $phn_no == '' || $nationality == '' || $state_origin == '' || $lga == '' || $ward == '' ||
-        $occupation == '' || $religion == ''){
+    if($fname == '' || $mname == '' || $lname == '' || $level == '' || $gender == '' || $dept == '' || $Course_of_study == '' ||
+        $email_id == ''  || $phn_no == '' || $state_origin == '' || $lga == '' || 
+        $faculty == ''){
         $form_err= true;
     }
     if(!$form_err) {
@@ -52,13 +57,14 @@ if(isset($_POST['voter_submit_btn'])){
             //save data to db
             $votr_id = generate_voters_id();
             if(!empty($votr_id)){
-                $sql= "INSERT into registeration (fname,mname,lname,address,gender,dob,age,status,email_id,phn_no,nationality,
-                    state_origin,lga,ward,occupation,passport,voter_id,religion) VALUES ('$fname','$mname','$lname','$address','$gender','$dob',$age,'$status','$email_id',
-                    '$phn_no','$nationality','$state_origin','$lga',$ward,'$occupation','$dest','$votr_id','$religion')";
-                mysqli_query($con, $sql) or die(mysqli_error($con));
-                $md5pass = md5('password');
-                mysqli_query($con, "insert into users(username, password, privilege, user_image) VALUES ('$votr_id', '$md5pass', 'VOTER', '$dest')") or die(mysqli_error($con));
-                $success= "Congratulations, a new voter $fname $mname $lname has been created. Your Password is $voters_def_pass";
+                $sql= "INSERT into registeration (fname,mname,lname,level,gender,faculty,dept,Course_of_study,email_id,phn_no,
+                    state_origin,lga,passport,voter_id) VALUES ('$fname','$mname','$lname','$level','$gender','$faculty',$dept,'$Course_of_study','$email_id','$phn_no','$state_origin','$lga','$dest','$votr_id')";
+               mysqli_query($con, $sql) or die(mysqli_error($con));
+                
+                $success= "Congratulations, Your Profile has been Update. Here is your one time Password ".$votr_id;
+            }
+            else{
+                $error_message = "Technical Issue Please contact Administrator";
             }
 
         }else {
@@ -66,6 +72,37 @@ if(isset($_POST['voter_submit_btn'])){
         }
     }
 
+}
+if (isset($_POST['update_profile'])) {
+    $fname= $_POST['fname'];
+    $mname= $_POST['mname'];
+    $lname= $_POST['lname'];
+    $level= $_POST['level'];
+    $faculty= $_POST['faculty'];
+    $gender= $_POST['gender'];
+    $dept= $_POST['dept'];
+    $course_of_study= $_POST['course_of_study'];
+    $email_id= mysqli_real_escape_string($con,$_POST['email_id']);
+    $phn_no= $_POST['phn_no'];
+    $state_origin= $_POST['state_origin'];
+    $lga= $_POST['lga'];
+    $form_err= false;
+    if($fname == ''  || $lname == '' || $level == '' || $gender == '' || $dept == '' || $course_of_study == ''
+          || $phn_no == '' || $state_origin == '' || $lga == '' || $faculty == ''){
+        $form_err= true;
+    }
+    if(!$form_err) {
+        $update_sql = "UPDATE registeration Set fname ='$fname',mname ='$mname', lname = '$lname', level ='$level', faculty ='$faculty',
+        gender ='$gender', dept ='$dept', course_of_study = '$course_of_study',phn_no ='$phn_no',state_origin ='$state_origin',lga='$lga' 
+        where email_id ='$email_id' ";
+        // mysqli_query($con, $update_sql) or die(mysqli_error($con));
+        if (mysqli_query($con,$update_sql)) {
+            $success_message = "Profile Updated successfully";
+        }
+        else{
+            $error_message = "Sorry Error Occured!!! Please retry";
+        }
+    }
 }
 
 $sel= "SELECT * from registeration";
@@ -75,6 +112,8 @@ $ward_all = mysqli_query($con, "select * from ward");
 $sch_ward = mysqli_query($con, "Select* from school_ward");
 $lga_all = mysqli_query($con, "select * from lga");
 $state_all = mysqli_query($con, "select DISTINCT name from lga where 1");
+$faculty_all = mysqli_query($con, "select DISTINCT faculty from faculty_dpt where 1");
+$faculty_dept = mysqli_query($con, "select * from faculty_dpt");
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -136,12 +175,15 @@ $state_all = mysqli_query($con, "select DISTINCT name from lga where 1");
                     <strong>Deleted!</strong> The selected voter was successfully deleted.
                 </div>
 
-                <?php } ?>
+                <?php } 
+
+                 if(mysqli_num_rows($rd) < 1){
+                ?>
 
                 <div class="col-md-4">
                     <div class="x_panel">
                         <div class="x_title">
-                            <h2>Voter Registration Form </h2>
+                            <h2>Update Profile </h2>
 
                             <div class="clearfix"></div>
                         </div>
@@ -154,6 +196,12 @@ $state_all = mysqli_query($con, "select DISTINCT name from lga where 1");
                             }
                             if (isset($_POST['voter_submit_btn']) && $success != '') {
                                 echo "<p style='color:green'> $success </p>";
+                            }
+                            if (isset($_POST['voter_submit_btn']) && $error_message != '') {
+                                echo "<p style='color:red'> $error_message </p>";
+                            }
+                            if (isset($_POST['voter_submit_btn']) && $upload_error != '') {
+                                echo "<p style='color:red'> $upload_error </p>";
                             }
                             ?>
 
@@ -184,87 +232,75 @@ $state_all = mysqli_query($con, "select DISTINCT name from lga where 1");
                                 <div class="form-group">
                                     <label class="control-label col-xs-12">Email Address</label>
                                     <div class="col-xs-12">
-                                        <input name="email_id" class="form-control col-xs-12" type="email">
+                                        <input name="email_id" class="form-control col-xs-12" type="email" value="<?=$session_Username?>" readonly>
                                     </div>
                                 </div>
 
                                 <div class="form-group">
                                     <label class="control-label col-xs-12">Phone Number</label>
                                     <div class="col-xs-12">
-                                        <input name="phn_no" class="form-control col-xs-12" type="text">
+                                        <input name="phn_no" class="form-control col-xs-12" type="text" maxlength="11">
                                     </div>
                                 </div>
                                 <div class="form-group">
-                                    <label class="control-label col-xs-12">Home Address</label>
+                                    <label class="control-label col-xs-12">Levl</label>
                                     <div class="col-xs-12">
-                                        <input name="address" class="form-control col-xs-12" type="text" placeholder="Enter your permanent address">
-                                    </div>
-                                </div>
-                                <div class="form-group">
-                                    <label class="control-label col-xs-12">Occupation</label>
-                                    <div class="col-xs-12">
-                                        <input name="occupation" class="form-control col-xs-12" type="text">
-                                    </div>
-                                </div>
-                                <div class="form-group">
-                                    <label class="control-label col-xs-12">Date of Birth</label>
-                                    <div class="col-xs-12">
-                                        <fieldset>
-                                            <div class="control-group">
-                                                <div class="controls">
-                                                    <div class="col-md-11 xdisplay_inputx form-group has-feedback">
-                                                        <input name="dob" type="text" class="form-control has-feedback-left" id="single_cal4" placeholder="Date of birth" aria-describedby="inputSuccess2Status4">
-                                                        <span class="fa fa-calendar-o form-control-feedback left" aria-hidden="true"></span>
-                                                        <span id="inputSuccess2Status4" class="sr-only">(success)</span>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </fieldset>
-                                    </div>
-                                </div>
-
-                                <div class="form-group">
-                                    <label class="control-label col-xs-12">Age<span class="required">*</span></label>
-                                    <div class="col-xs-12">
-                                        <input name="age" required="required" class="form-control col-xs-12" type="text">
-
-                                    </div>
-                                </div>
-                                <div class="form-group">
-                                    <label class="control-label col-xs-12">Marital Status </label>
-                                    <div class="col-xs-12">
-                                        <select name="status" class="form-control">
-                                            <option value="single">Single</option>
-                                            <option value="married">Married</option>
-                                            <option value="divorced">Divorced</option>
-                                            <option value="widow">Widow</option>
+                                        <select name="level" class="form-control">
+                                            <option value="">Select Current Level</option>
+                                            <option value="100">100</option>
+                                            <option value="200">200</option>
+                                            <option value="300">300</option>
+                                            <option value="400">400</option>
+                                            <option value="500">500</option>
+                                            <option value="600">600</option>
                                         </select>
                                     </div>
                                 </div>
                                 <div class="form-group">
-                                    <label class="control-label col-xs-12">Religion</label>
+                                    <label class="control-label col-xs-12">Course of Study</label>
                                     <div class="col-xs-12">
-                                        <select name="religion" class="form-control">
-                                            <option value="islam">Islam</option>
-                                            <option value="christianity">Christianity</option>
-                                            <option value="other">Other</option>
+                                        <input name="course_of_study" class="form-control col-xs-12" type="text">
+                                    </div>
+                                </div>
+
+                                <div class="form-group" id="faculty_fm_g">
+                                    <label class="control-label col-xs-12">Faculty</label>
+
+                                    <div class="col-xs-12">
+                                        <select name="faculty" class="form-control" id="select_faculty">
+                                            <option value="">Select a Faculty</option>
+                                            <?php while ($frow = mysqli_fetch_assoc($faculty_all)) { ?>
+                                                <option value="<?= $frow['faculty'] ?>"><?= $frow['faculty'] ?></option>
+                                            <?php } ?>
+
                                         </select>
                                     </div>
                                 </div>
+
+                                <div class="form-group" id="dept_fm_g">
+                                    <label class="control-label col-xs-12">Department</label>
+
+                                    <div class="col-xs-12">
+                                        <select name="dept" class="form-control" id="select_dept">
+                                            <option value="">Select a Department</option>
+
+                                            <?php while ($drow = mysqli_fetch_assoc($faculty_dept)) { ?>
+                                                <option value="<?= $drow['sn'] ?>"
+                                                        dir="<?= $drow['faculty'] ?>"><?= $drow['dept'] ?></option>
+                                            <?php } ?>
+
+                                        </select>
+                                    </div>
+                                </div>
+                                
                                 <div class="form-group">
                                     <label class="control-label col-xs-12">Gender </label>
                                     <div class="col-xs-12">
                                         <select name="gender" class="form-control">
+                                            <option value="">Select Gender</option>
                                             <option value="male">Male</option>
                                             <option value="female">Female</option>
-                                        </select>
-                                    </div>
-                                </div>
-                                <div class="form-group">
-                                    <label class="control-label col-xs-12">Nationality</label>
-                                    <div class="col-xs-12">
-                                        <select name="nationality" class="form-control">
-                                            <option value="nigerian">Nigerian</option>
+                                            <option value="other">Other</option>
                                         </select>
                                     </div>
                                 </div>
@@ -293,18 +329,6 @@ $state_all = mysqli_query($con, "select DISTINCT name from lga where 1");
                                     </div>
                                 </div>
 
-                                <div class="form-group" id="ward_fm_g">
-                                    <label class="control-label col-xs-12">Ward</label>
-                                    <div class="col-xs-12">
-                                        <select name="ward" class="form-control" id="ward_select">
-                                            <option value="">Select a Ward</option>
-                                            <?php while($wrow= mysqli_fetch_assoc($sch_ward)) { ?>
-                                                <option value="<?= $wrow['sn']?>" dir="<?=$wrow['lga_id']?>"><?= $wrow['ward_Name']?></option>
-                                            <?php } ?>
-
-                                        </select>
-                                    </div>
-                                </div>
                                 <div class="ln_solid"></div>
                                 <div class="form-group">
                                     <div class="col-xs-12 col-md-offset-3">
@@ -317,77 +341,185 @@ $state_all = mysqli_query($con, "select DISTINCT name from lga where 1");
                         </div>
                     </div>
                 </div>
+                <?php }
+                    else{
+                        $profile_result = mysqli_fetch_assoc($rd);
+
+                ?>
                 <div class="col-md-8">
                     <div class="x_panel">
                         <div class="x_title">
-                            <h2>All Registered Voters</h2>
+                            <h2>My Profile.</h2>
 
                             <div class="clearfix"></div>
                         </div>
                         <div class="x_content">
-                            <p class="text-muted font-13 m-b-30">
-                                Check the list of all registered voters. You can edit and delete based on need.
-                            </p>
-
-                            <div id="datatable_wrapper" class="dataTables_wrapper form-inline dt-bootstrap no-footer">
+                           <br>
+                            <form method="post" action="voters_reg.php" class="form-horizontal" enctype="multipart/form-data">
+                            <?php
+                            if (isset($_POST['update_profile']) && $form_err) {
+                                echo "<p style='color:red'> The form is invalid. please review and submit again!!! </p>";
+                            }
+                            if (isset($_POST['update_profile']) && $success_message != '') {
+                                echo "<p style='color:green'> $success_message </p>";
+                            }
+                            if (isset($_POST['update_profile']) && $error_message != '') {
+                                echo "<p style='color:red'> $error_message </p>";
+                            }
+                            ?>
 
                                 <div class="row">
                                     <div class="col-sm-12">
-                                        <table id="datatable"
-                                               class="table table-striped table-bordered dataTable no-footer"
-                                               role="grid" aria-describedby="datatable_info">
-                                            <thead>
-                                            <tr>
-                                                <th>SN</th>
-                                                <th>Full Name</th>
-                                                <th>Voter's ID</th>
-                                                <th>Image</th>
-                                                <th>Action</th>
-                                            </tr>
-                                            </thead>
-
-
-                                            <tbody>
-                                            <?php
-                                            $counter = 1;
-                                            while($row = mysqli_fetch_assoc($result)) {
-                                                ?>
-                                                <tr>
-                                                    <td><?php echo $counter; ?></td>
-                                                    <td><?php echo $row['fname']. ' '.$row['mname'].' '. $row['lname']; ?></td>
-                                                    <td><?php echo $row['voter_id']; ?></td>
-                                                    <td> <img src="<?php echo $row['passport']; ?>" width="90px" height="90px" /></td>
-                                                    <td>
-                                                        <div class="btn-group">
-                                                            <button type="button" class="btn btn-primary">Action</button>
-                                                            <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
-                                                                <span class="caret"></span>
-                                                                <span class="sr-only">Action Menu</span>
-                                                            </button>
-                                                            <ul class="dropdown-menu" role="menu">
-                                                                <li><a href="voter_edit.php?v=<?= $row['sn'] ?>">Edit Record</a>
-                                                                </li>
-                                                                <li><a href="voter_delete.php?v=<?= $row['sn'] ?>">Delete Record</a>
-                                                                </li>
-
-                                                            </ul>
-                                                        </div>
-                                                    </td>
-                                                </tr>
-                                            <?php
-                                                $counter++;
-                                            } ?>
-                                            </tbody>
-                                        </table>
+                                    <div class="form-group">
+                                        <label class="control-label col-xs-12" for="first-name">First Name</label>
+                                        <div class="col-xs-12">
+                                            <input type="text" name="fname" class="form-control col-xs-12" value="<?=$profile_result['fname']?>" >
+                                        </div>
+                                    </div>
+                                <div class="form-group">
+                                    <label class="control-label col-xs-12" for="last-name">Middle Name</label>
+                                    <div class="col-xs-12">
+                                        <input type="text"  name="mname" class="form-control col-xs-12" value="<?=$profile_result['mname']?>" >
                                     </div>
                                 </div>
-                                <div class="row">
-
+                                <div class="form-group">
+                                    <label for="middle-name" class="control-label col-xs-12">Last Name </label>
+                                    <div class="col-xs-12">
+                                        <input name="lname" class="form-control col-xs-12" type="text" value="<?=$profile_result['lname']?>" >
+                                    </div>
                                 </div>
-                            </div>
+                                <div class="form-group">
+                                    <label class="control-label col-xs-12">Email Address</label>
+                                    <div class="col-xs-12">
+                                        <input name="email_id" class="form-control col-xs-12" type="email" value="<?=$session_Username?>" readonly>
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label class="control-label col-xs-12">Phone Number</label>
+                                    <div class="col-xs-12">
+                                        <input name="phn_no" class="form-control col-xs-12" type="text" maxlength="11" value="<?=$profile_result['phn_no']?>" >
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="control-label col-xs-12">Levl</label>
+                                    <div class="col-xs-12">
+                                        <select name="level" class="form-control">
+                                            <option value="<?=$profile_result['level']?>" selected> <?=$profile_result['level']?></option>
+                                            <option value="">Select Current Level</option>
+                                            <option value="100">100</option>
+                                            <option value="200">200</option>
+                                            <option value="300">300</option>
+                                            <option value="400">400</option>
+                                            <option value="500">500</option>
+                                            <option value="600">600</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="control-label col-xs-12">Course of Study</label>
+                                    <div class="col-xs-12">
+                                        <input name="course_of_study" class="form-control col-xs-12" type="text" value="<?=$profile_result['course_of_study']?>">
+                                    </div>
+                                </div>
+
+                                <div class="form-group" id="faculty_fm_g">
+                                    <label class="control-label col-xs-12">Faculty</label>
+
+                                    <div class="col-xs-12">
+                                        <select name="faculty" class="form-control" id="select_faculty">
+                                            <option value="<?=$profile_result['faculty']?>" selected> <?=$profile_result['faculty']?></option>
+                                            <option value="">Select a Faculty</option>
+                                            <?php while ($frow = mysqli_fetch_assoc($faculty_all)) { ?>
+                                                <option value="<?= $frow['faculty'] ?>"><?= $frow['faculty'] ?></option>
+                                            <?php } ?>
+
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div class="form-group" id="dept_fm_g">
+                                    <label class="control-label col-xs-12">Department</label>
+
+                                    <div class="col-xs-12">
+                                        <select name="dept" class="form-control" id="select_dept">
+                                            <option value="<?=$profile_result['dept']?>" selected> <?=get_dept($profile_result['dept'])?></option>
+                                            <option value="">Select a Department</option>
+
+                                            <?php while ($drow = mysqli_fetch_assoc($faculty_dept)) { ?>
+                                                <option value="<?= $drow['sn'] ?>"
+                                                        dir="<?= $drow['faculty'] ?>"><?= $drow['dept'] ?></option>
+                                            <?php } ?>
+
+                                        </select>
+                                    </div>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label class="control-label col-xs-12">Gender </label>
+                                    <div class="col-xs-12">
+                                        <select name="gender" class="form-control">
+                                        <option value="<?=$profile_result['gender']?>" selected> <?=$profile_result['gender']?></option>
+                                            <option value="">Select Gender</option>
+                                            <option value="male">Male</option>
+                                            <option value="female">Female</option>
+                                            <option value="other">Other</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="form-group" id="state_fm_g">
+                                    <label class="control-label col-xs-12">State of Origin</label>
+                                    <div class="col-xs-12">
+                                        <select name="state_origin" class="form-control" id="state_select">
+                                        <option value="<?=$profile_result['state_origin']?>" selected> <?=$profile_result['state_origin']?></option>
+                                            <option value="">Select a State</option>
+                                            <?php while($lrow= mysqli_fetch_assoc($state_all)) { ?>
+                                                <option value="<?= $lrow['name']?>"><?=$lrow['name']?></option>
+                                            <?php } ?>
+
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="form-group" id="lga_fm_g">
+                                    <label class="control-label col-xs-12">LGA</label>
+                                    <div class="col-xs-12">
+                                        <select name="lga" class="form-control" id="lga_select">
+                                        <option value="<?=$profile_result['lga']?>" selected> <?=get_lga($profile_result['lga'])?></option>
+                                            <option value="">Select a Local Government</option>
+                                            <?php while($lrow= mysqli_fetch_assoc($lga_all)) { ?>
+                                                <option value="<?= $lrow['sn']?>" dir="<?=$lrow['name']?>"><?= $lrow['name'] .' '.$lrow['lga']?></option>
+                                            <?php } ?>
+
+                                        </select>
+                                    </div>
+                                </div>
+                                    </div>
+                                </div>
+
+                                <div class="ln_solid"></div>
+                                <div class="form-group">
+                                    <div class="col-xs-12">
+                                        <button type="submit" class="btn btn-success btn-block" name="update_profile">Update</button>
+                                    </div>
+                                </div>
+                                </form>
+                            
                         </div>
                     </div>
                 </div>
+                <div class="col-md-4">
+                    <div class="profile clearfix">
+                        <div class="profile_pic">
+                            <img src="<?=$profile_result['passport']?>" alt="..." class=" profile_img" width="200px" height="200px">
+                        </div>
+                        <div class="profile_info" style="clear: both">
+                            <h2 style="color:green;"><?= $full_name?></h2>
+                        </div>
+                    </div>
+                </div>
+                <?php
+                    }
+                ?>
             </div>
         </div>
 
@@ -468,15 +600,16 @@ $state_all = mysqli_query($con, "select DISTINCT name from lga where 1");
     })
 
 
-    $('#ward_select option').hide();
-    $('#lga_select').change(function(){
-        $('#ward_select option').hide();
-
-            var this_val = $(this).val();
-            $('#ward_select option[dir='+this_val+']').show();
-            $('#ward_fm_g').show();
+</script>
+<script>
+    $('#dept_fm_g').show();
+    $('#select_dept option').hide();
+    $('#select_faculty').change(function () {
+        $('#select_dept option').hide();
+        var this_val = $(this).val();
+        $('#select_dept option[dir=' + this_val + ']').show();
+        $('#dept_fm_g').show();
     })
-
 </script>
 </body>
 </html>

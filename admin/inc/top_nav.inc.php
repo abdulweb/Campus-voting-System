@@ -9,7 +9,7 @@
                 <li class="">
                   <a href="javascript:;" class="user-profile dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
                     <img src="images/user.png" alt="">
-                    <?php if(isset($_SESSION['isstaff'])) { ?>
+                    <?php if(isset($_SESSION['isvoter'])) { ?>
                       <?= $session_username;?>
                     <?php }else{ ?>
                       Admin

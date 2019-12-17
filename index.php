@@ -1,5 +1,5 @@
 <?php
-echo md5('12345678');
+// echo md5('12345678');
 session_start();
 if (isset($_SESSION['isadmin']) || isset($_SESSION['isstaff'])) {
     header('Location:./admin/index.php');
@@ -18,17 +18,17 @@ if (isset($_POST['login_btn'])) {
         $_SESSION['isadmin'] = 'Admin';
         header('Location:./admin/index.php');
     }
-    if ($password==$voter_supperPassword) {
-                $qury = mysqli_query($con, "select * from registeration where voter_id = '$username'");
-                $result = mysqli_num_rows($qury);
-                if($result==1){
-                    $row = mysqli_fetch_assoc($qury);
-                    $_SESSION['isvoter'] = $row['voter_id'];
-                    //header('Location:index.php');
-                }
+    // if ($password==$voter_supperPassword) {
+    //             $qury = mysqli_query($con, "select * from registeration where voter_id = '$username'");
+    //             $result = mysqli_num_rows($qury);
+    //             if($result==1){
+    //                 $row = mysqli_fetch_assoc($qury);
+    //                 $_SESSION['isvoter'] = $row['voter_id'];
+    //                 //header('Location:index.php');
+    //             }
                 
 
-    } 
+    // } 
     if ($username != '' && $password != '') {
         //staff account
         $md5pass = md5($password);
@@ -48,6 +48,7 @@ if (isset($_POST['login_btn'])) {
             } else if ($privilege == 'VOTER') {
                 $row = mysqli_fetch_assoc($sql);
                 $_SESSION['isvoter'] = $row['username'];
+                header('Location:./admin/index.php');
 
             }
 
@@ -120,16 +121,21 @@ if (isset($_POST['login_btn'])) {
         .flip .back {
             text-align: center;
         }
+        .invalid_danger{
+            color: red;
+            margin-left: 10px;
+            font-weight: bold;
+        }
     </style>
 </head>
 <body>
 
-<?php include('home_inc/head.php')?>
+<?php include('home_inc/head.php');?>
 <div class="fix-header"></div>
 
 <div class="full-width content_height">
     <div class="half-width content_height">
-        <img src="images/b1.jpg" class="content_height">
+        <img src="images/campus4.jpg" class="content_height">
     </div>
     <div class="half-width content_height">
         <div class="container container-extended margin-top-20">
@@ -138,12 +144,19 @@ if (isset($_POST['login_btn'])) {
 
                 <div class="col s12">
 
-                    <?php if(!isset($_SESSION['isvoter'])) { ?>
                     <div class="card">
                         <div class="card-content">
                             <div class="card-title"><h5 style="text-align: center">Login To Access The System</h5></div>
 
                             <div class="row">
+                            <div>
+                                    <?php 
+                                    if (isset($invalid_credentials)) {?>
+                                        <div class ="alert invalid_danger"> Wrong Username or Password </div>
+                                    <?php 
+                                    }
+                                    ?>
+                                </div>
                                 <form class="col s12" method="post" action="">
                                     <div class="row">
                                         <div class="input-field col s12">
@@ -160,6 +173,7 @@ if (isset($_POST['login_btn'])) {
                                         <button class="btn waves-effect waves-light" style="float: right" type="submit"
                                                 name="login_btn">Submit
                                         </button>
+                                        <p class="pull-right">Not a Member? <a href="signUp.php"> Click Here</a><p>
 
                                     </div>
                                 </form>
@@ -167,17 +181,7 @@ if (isset($_POST['login_btn'])) {
                         </div>
 
                     </div>
-                    <?php }else{ ?>
-                        <div style="padding:50px 20px;text-align: center">
-                            <h4 style="color: green;"> Login Successful !!!!</h4>
-
-                            <a href="voting_page.php" class="btn waves-effect waves-light" style="line-height: 100px; height: 100px;" type="submit" name="action">Proceed</a>
-
-                            <h4 style="color: darkgray;"> Or</h4>
-
-                            <a href="admin/logout.php" class="btn waves-effect waves-orange" style=" background: orangered; line-height: 100px; height: 100px;" type="submit" name="action">Logout</a>
-                        </div>
-                    <?php } ?>
+                   
                 </div>
 
             </div>
@@ -186,7 +190,7 @@ if (isset($_POST['login_btn'])) {
     </div>
 </div>
 
-<?php include('home_inc/foot.php')?>
+<?php include('home_inc/foot.php');?>
 
 <!--  Scripts-->
 <script src="js/jquery-2.1.1.min.js"></script>

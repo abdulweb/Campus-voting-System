@@ -6,16 +6,17 @@ $ward = '';
 if (isset($_POST['aspirant_submit_btn'])) {
     $full_name = $_POST['full_name'];
     $gender = $_POST['gender'];
-    $age = $_POST['age'];
-    $qualification = $_POST['qualification'];
-    $party = $_POST['party'];
+    $admission_no = $_POST['admission_no'];
+    $level = $_POST['level'];
     $post = $_POST['post'];
     $lga = $_POST['lga'];
-    $ward = $_POST['ward'];
-    $religion = $_POST['religion'];
-    $address = $_POST['address'];
+    $course_of_study = $_POST['course_of_study'];
+    $cgpa = $_POST['cgpa'];
+    $dept = $_POST['dept'];
+    $faculty = $_POST['faculty'];
+    $state = $_POST['state_origin'];
     $form_err = false;
-    if ($full_name == '' || $gender == '' || $age == '' || $qualification == '' || $party == '' || $post == '' || $lga == '' || $religion == '' || $address == '') {
+    if ($full_name == '' || $gender == '' || $admission_no == '' || $level == '' || $dept == '' || $post == '' || $lga == '' || $course_of_study == '' || $cgpa == '') {
         $form_err = true;
     }
     if (!$form_err) {
@@ -25,8 +26,8 @@ if (isset($_POST['aspirant_submit_btn'])) {
         if (move_uploaded_file($_FILES['passport']['tmp_name'], $dest)) {
             //save data to db
             $post_check = mysqli_fetch_assoc(mysqli_query($con, "select sn from post where post_name = '$post'"));
-            $sql = "INSERT into aspirant (full_name,gender,age,qualification,passport,post_id,party_id,lga_id,ward_id,religion,address)
-                VALUES ('$full_name','$gender','$age','$qualification','$dest','$post_check[sn]','$party','$lga','$ward','$religion','$address')";
+            $sql = "INSERT into aspirant (full_name,gender,level,cgpa,passport,post_id,faculty_dpt_id,lga_id,course_of_study,admissionNo,state,faculty)
+                VALUES ('$full_name','$gender','$level','$cgpa','$dest','$post_check[sn]','$dept','$lga','$course_of_study','$admission_no','$state','$faculty')";
             mysqli_query($con, $sql) or die(mysqli_error($con));
             $success = "Congratulations, a new aspirant $full_name has been created";
 
@@ -44,7 +45,7 @@ function get_ward_name($aspirant_id)
     return $out;
 }
 
-$sel = "SELECT *, a.sn, c.party_name, c.party_code,c.party_logo, ps.post_name, lg.lga from aspirant a   JOIN party c on a.party_id=c.sn join post ps on a.post_id = ps.sn join lga lg  on a.lga_id=lg.sn ";
+$sel = "SELECT *, a.sn,  ps.post_name, lg.lga from aspirant a   JOIN  post ps on a.post_id = ps.sn join lga lg  on a.lga_id=lg.sn ";
 $result = mysqli_query($con, $sel) or die(mysqli_error($con));
 
 $post_all = mysqli_query($con, "select * from post");
@@ -52,6 +53,8 @@ $party_all = mysqli_query($con, "select * from party");
 $ward_all = mysqli_query($con, "select * from ward");
 $lga_all = mysqli_query($con, "select * from lga");
 $state_all = mysqli_query($con, "select DISTINCT name from lga where 1");
+$faculty_all = mysqli_query($con, "select DISTINCT faculty from faculty_dpt where 1");
+$faculty_dept = mysqli_query($con, "select * from faculty_dpt");
 
 ?>
 <!DOCTYPE html>
@@ -84,7 +87,7 @@ $state_all = mysqli_query($con, "select DISTINCT name from lga where 1");
     <!-- Custom Theme Style -->
     <link href="./build/css/custom.min.css" rel="stylesheet">
     <style>
-        #lga_fm_g, #ward_fm_g {
+        #lga_fm_g, #ward_fm_g, #dept_fm_g {
             display: none;
         }
     </style>
@@ -146,6 +149,14 @@ $state_all = mysqli_query($con, "select DISTINCT name from lga where 1");
                                     </div>
                                 </div>
                                 <div class="form-group">
+                                    <label class="control-label col-md-3 col-sm-3 col-xs-12">Admission Number</label>
+
+                                    <div class="col-md-6 col-sm-6 col-xs-12">
+                                        <input name="admission_no" placeholder="Admission Number"
+                                               class="form-control col-md-7 col-xs-12" type="text" maxlength="11">
+                                    </div>
+                                </div>
+                                <div class="form-group">
                                     <label class="control-label col-md-3 col-sm-3 col-xs-12">Gender</label>
 
                                     <div class="col-md-6 col-sm-6 col-xs-12">
@@ -156,67 +167,51 @@ $state_all = mysqli_query($con, "select DISTINCT name from lga where 1");
                                     </div>
                                 </div>
                                 <div class="form-group">
-                                    <label class="control-label col-md-3 col-sm-3 col-xs-12">Religion</label>
+                                    <label class="control-label col-md-3 col-sm-3 col-xs-12">Level</label>
 
                                     <div class="col-md-6 col-sm-6 col-xs-12">
-                                        <select name="religion" class="form-control">
-                                            <option value="islam">Islam</option>
-                                            <option value="christianity">Christianity</option>
-                                            <option value="other">Other</option>
+                                        <select name="level" class="form-control">
+                                            <option value="">Select Current Level</option>
+                                            <option value="100">100</option>
+                                            <option value="200">200</option>
+                                            <option value="300">300</option>
+                                            <option value="400">400</option>
+                                            <option value="500">500</option>
+                                            <option value="600">600</option>
                                         </select>
-                                    </div>
-                                </div>
-                                <div class="form-group">
-                                    <label class="control-label col-md-3 col-sm-3 col-xs-12">Home Address</label>
-
-                                    <div class="col-md-6 col-sm-6 col-xs-12">
-                                        <input name="address" class="form-control col-xs-12" type="text"
-                                               placeholder="Enter your permanent address">
                                     </div>
                                 </div>
                                 <div class="form-group">
                                     <label class="control-label col-md-3 col-sm-3 col-xs-12">Aspirant's Image</label>
 
                                     <div class="col-md-6 col-sm-6 col-xs-12">
-                                        <input type="file" name="passport" col-md-7 col-xs-12">
+                                        <input type="file" name="passport" class="col-md-7 col-xs-12">
                                     </div>
                                 </div>
-
-                                <div class="form-group">
-                                    <label class="control-label col-md-3 col-sm-3 col-xs-12">Age<span
-                                            class="required">*</span></label>
+                                <div class="form-group" id="faculty_fm_g">
+                                    <label class="control-label col-md-3 col-sm-3 col-xs-12">Faculty</label>
 
                                     <div class="col-md-6 col-sm-6 col-xs-12">
-                                        <input name="age" required="required" class="form-control col-md-7 col-xs-12"
-                                               type="text">
-                                    </div>
-                                </div>
-                                <div class="form-group">
-                                    <label class="control-label col-md-3 col-sm-3 col-xs-12">Highest
-                                        Qualification </label>
+                                        <select name="faculty" class="form-control" id="select_faculty">
+                                            <option value="">Select a Faculty</option>
+                                            <?php while ($frow = mysqli_fetch_assoc($faculty_all)) { ?>
+                                                <option value="<?= $frow['faculty'] ?>"><?= $frow['faculty'] ?></option>
+                                            <?php } ?>
 
-                                    <div class="col-md-6 col-sm-6 col-xs-12">
-                                        <select name="qualification" class="form-control">
-                                            <option value="ssce">SSCE</option>
-                                            <option value="ond">OND</option>
-                                            <option value="hnd">HND</option>
-                                            <option value="nce">NCE</option>
-                                            <option value="bsc">BSc.</option>
-                                            <option value="msc">MSc.</option>
-                                            <option value="btech">BTech.</option>
-                                            <option value="mtech">MTech.</option>
-                                            <option value="phd">Ph.D.</option>
                                         </select>
                                     </div>
                                 </div>
-                                <div class="form-group">
-                                    <label class="control-label col-md-3 col-sm-3 col-xs-12">Party</label>
+
+                                <div class="form-group" id="dept_fm_g">
+                                    <label class="control-label col-md-3 col-sm-3 col-xs-12">Department</label>
 
                                     <div class="col-md-6 col-sm-6 col-xs-12">
-                                        <select name="party" class="form-control">
-                                            <option value="">Select a party</option>
-                                            <?php while ($prow = mysqli_fetch_assoc($party_all)) { ?>
-                                                <option value="<?= $prow['sn'] ?>"><?= $prow['party_code'] ?></option>
+                                        <select name="dept" class="form-control" id="select_dept">
+                                            <option value="">Select a Department</option>
+
+                                            <?php while ($drow = mysqli_fetch_assoc($faculty_dept)) { ?>
+                                                <option value="<?= $drow['sn'] ?>"
+                                                        dir="<?= $drow['faculty'] ?>"><?= $drow['dept'] ?></option>
                                             <?php } ?>
 
                                         </select>
@@ -228,13 +223,32 @@ $state_all = mysqli_query($con, "select DISTINCT name from lga where 1");
 
                                     <div class="col-md-6 col-sm-6 col-xs-12">
                                         <select name="post" class="form-control" id="post_select">
-                                            <option value="">Select a post</option>
-                                            <?php while ($psrow = mysqli_fetch_assoc($post_all)) { ?>
+                                            <option value="">Select a Post</option>
+                                            <?php while ($dfrow = mysqli_fetch_assoc($post_all)) { ?>
                                                 <option
-                                                    value="<?= $psrow['post_name'] ?>"><?= $psrow['post_name'] ?></option>
+                                                    value="<?= $dfrow['post_name'] ?>"><?= $dfrow['post_name'] ?></option>
                                             <?php } ?>
 
+
                                         </select>
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label class="control-label col-md-3 col-sm-3 col-xs-12">CGPA </label>
+
+                                    <div class="col-md-6 col-sm-6 col-xs-12">
+                                        <input name="cgpa" placeholder="Curmulative Grade Point"
+                                               class="form-control col-md-7 col-xs-12" type="text">
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label class="control-label col-md-3 col-sm-3 col-xs-12">Course of study </label>
+
+                                    <div class="col-md-6 col-sm-6 col-xs-12">
+                                        <input name="course_of_study" placeholder="Enter Course of study"
+                                               class="form-control col-md-7 col-xs-12" type="text">
                                     </div>
                                 </div>
 
@@ -267,29 +281,15 @@ $state_all = mysqli_query($con, "select DISTINCT name from lga where 1");
                                     </div>
                                 </div>
 
-                                $('#lga_fm_g').show();
+   <!--                              $('#lga_fm_g').show();
     $('#lga_select option').hide();
     $('#state_select').change(function () {
         $('#lga_select option').hide();
         var this_val = $(this).val();
         $('#lga_select option[dir=' + this_val + ']').show();
         $('#lga_fm_g').show();
-    })
+    }) -->
 
-                                <div class="form-group" id="ward_fm_g">
-                                    <label class="control-label col-md-3 col-sm-3 col-xs-12">Ward</label>
-
-                                    <div class="col-md-6 col-sm-6 col-xs-12">
-                                        <select name="ward" class="form-control" id="ward_select">
-                                            <option value="">Select a Ward</option>
-                                            <?php while ($wrow = mysqli_fetch_assoc($ward_all)) { ?>
-                                                <option value="<?= $wrow['sn'] ?>"
-                                                        dir="<?= $wrow['lga_id'] ?>"><?= $wrow['ward_name'] ?></option>
-                                            <?php } ?>
-
-                                        </select>
-                                    </div>
-                                </div>
 
                                 <div class="form-group">
                                     <div class="col-md-6 col-sm-6 col-xs-12 col-md-offset-3">
@@ -313,13 +313,13 @@ $state_all = mysqli_query($con, "select DISTINCT name from lga where 1");
                     <div class="col-md-12">
                         <div class="x_panel">
                             <div class="x_title">
-                                <h2>All Aspirants</h2>
+                                <h2>All Candidate</h2>
 
                                 <div class="clearfix"></div>
                             </div>
                             <div class="x_content">
                                 <p class="text-muted font-13 m-b-30">
-                                    Check the list of all registered aspirants. You can edit and delete based on need.
+                                    Check the list of all registered candidate. You can edit and delete based on need.
                                 </p>
 
                                 <div id="datatable_wrapper"
@@ -334,9 +334,9 @@ $state_all = mysqli_query($con, "select DISTINCT name from lga where 1");
                                                 <tr>
                                                     <th>SN</th>
                                                     <th>Full Name</th>
-                                                    <th>Party</th>
+                                                    <th>Level</th>
                                                     <th>Post</th>
-                                                    <th>LGA</th>
+                                                    <th>CGPA</th>
                                                     <th>Image</th>
                                                     <th>Action</th>
 
@@ -352,9 +352,9 @@ $state_all = mysqli_query($con, "select DISTINCT name from lga where 1");
                                                     <tr>
                                                         <td><?php echo $counter; ?></td>
                                                         <td><?php echo $row['full_name']; ?></td>
-                                                        <td><?php echo $row['party_code']; ?></td>
+                                                        <td><?php echo $row['level']; ?></td>
                                                         <td><?php echo $row['post_name']; ?></td>
-                                                        <td><?php echo $row['lga']; ?>
+                                                        <td><?php echo $row['cgpa']; ?>
                                                             <?php
                                                             if ($row['post_name'] == 'Councillorship') {
                                                                 $asp_id = $row['sn'];
@@ -392,7 +392,7 @@ $state_all = mysqli_query($con, "select DISTINCT name from lga where 1");
                                                                               action="aspirant_delete.php">
                                                                             <input type="hidden" name="asn"
                                                                                    value="<?= $row['sn'] ?>">
-                                                                            <button type="submit" class="btn btn-link">
+                                                                            <button type="submit" onclick="return confirm('Ready to Delete?')" class="btn btn-link">
                                                                                 Delete Record
                                                                             </button>
                                                                         </form>
@@ -511,6 +511,16 @@ $state_all = mysqli_query($con, "select DISTINCT name from lga where 1");
             $('#ward_fm_g').hide();
         }
 
+    })
+</script>
+<script>
+    $('#dept_fm_g').show();
+    $('#select_dept option').hide();
+    $('#select_faculty').change(function () {
+        $('#select_dept option').hide();
+        var this_val = $(this).val();
+        $('#select_dept option[dir=' + this_val + ']').show();
+        $('#dept_fm_g').show();
     })
 </script>
 </body>
